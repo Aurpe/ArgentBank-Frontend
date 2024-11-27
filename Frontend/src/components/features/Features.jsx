@@ -1,5 +1,5 @@
 import React from 'react';
-import featuresData from './features.json';
+import featuresData from '../../assets/features.json';
 
 const FeatureItem = ({ icon, title, description, alt }) => {
   return (
