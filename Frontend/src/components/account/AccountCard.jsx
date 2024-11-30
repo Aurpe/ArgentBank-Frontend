@@ -1,33 +1,30 @@
-import React from "react";
 
-const AccountCard = () => {
-    return (
-        <main className="main bg-dark">
-      <section className="sign-in-content">
-        <i class="fa fa-user-circle sign-in-icon"></i>
-        <h1>Sign In</h1>
-        <form>
-          <div class="input-wrapper">
-            <label for="username">Username</label
-            ><input type="text" id="username" />
-          </div>
-          <div class="input-wrapper">
-            <label for="password">Password</label
-            ><input type="password" id="password" />
-          </div>
-          <div class="input-remember">
-            <input type="checkbox" id="remember-me" /><label for="remember-me"
-              >Remember me</label
-            >
-          </div>
-         
-        </form>
-      </section>
-    </main>
-    )
-    }
-   
-   
+import '../account/AccountCard.scss';
+import React from 'react';
 
+const AccountCard = ({ 
+  title, 
+  amount, 
+  description, 
+  onViewTransactions 
+}) => {
+  return (
+    <section className="account">
+      <div className="account-content-wrapper">
+        <h3 className="account-title">{title}</h3>
+        <p className="account-amount">{amount}</p>
+        <p className="account-amount-description">{description}</p>
+        {onViewTransactions && (
+          <button 
+            className="transaction-button"
+            onClick={onViewTransactions}
+          >
+            View Transactions
+          </button>
+        )}
+      </div>
+    </section>
+  );
+};
 
 export default AccountCard;

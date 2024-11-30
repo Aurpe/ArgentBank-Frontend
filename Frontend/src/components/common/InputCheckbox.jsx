@@ -1,5 +1,6 @@
 
 import React from 'react';
+import '../common/InputCheckbox.scss';
 
 const InputCheckbox = ({ id, label, checked, onChange }) => {
   return (
