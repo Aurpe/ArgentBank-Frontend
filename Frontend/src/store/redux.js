@@ -1,60 +1,10 @@
-
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
-// Action: Connexion
-export const loginUser = createAsyncThunk(
-  'auth/loginUser',
-  async ({ email, password }, { rejectWithValue }) => {
-    try {
-      const response = await fetch('http://localhost:3001', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
-      }
-
-      const data = await response.json();
-      return data; // Retourne les données utilisateur
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-// Action: Récupérer les informations utilisateur
-export const fetchUser = createAsyncThunk(
-  'auth/fetchUser',
-  async (token, { rejectWithValue }) => {
-    try {
-      const response = await fetch('http://localhost:3001/api/v1/user/profile', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch user profile');
-      }
-
-      const data = await response.json();
-      return data.body; // Renvoyer uniquement les informations de l'utilisateur
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
+import { createSlice } from "@reduxjs/toolkit";
+import { loginUser } from "../api/fetchLoginUser";
+import { fetchUser } from "../api/fetchUser";
 
 // Slice
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState: {
     isAuthenticated: false,
     user: null,
@@ -66,7 +16,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.user = null;
       state.token = null;
-      localStorage.removeItem('token');
+      localStorage.removeItem("token");
     },
   },
   extraReducers: (builder) => {
@@ -75,7 +25,8 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isAuthenticated = true;
         state.token = action.payload.token;
-        localStorage.setItem('token', action.payload.token); // Stocker le token dans le localStorage
+        state.user = action.payload.user; // Sauvegarder l'utilisateur également
+        localStorage.setItem("token", action.payload.token);
         state.error = null;
       })
       // Échec de la connexion
@@ -98,11 +49,3 @@ const authSlice = createSlice({
 
 export const { logout } = authSlice.actions;
 export default authSlice.reducer;
-
-
-
-
-
-
-
-  

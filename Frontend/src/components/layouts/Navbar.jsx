@@ -1,9 +1,9 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import "../layouts/Navbar.scss";
-import argentBankLogo from '../../assets/img/argentBankLogo.png';
-import { logout } from '../../store/redux';
+import argentBankLogo from "../../assets/img/argentBankLogo.png";
+import { logout } from "../../store/redux";
 
 const Navbar = ({ isAuthenticated, userName }) => {
   const dispatch = useDispatch();
@@ -11,7 +11,7 @@ const Navbar = ({ isAuthenticated, userName }) => {
 
   const handleLogout = () => {
     dispatch(logout()); // Déconnexion via Redux Toolkit
-    navigate('/sign-in'); // Redirection vers la page de connexion
+    navigate("/sign-in"); // Redirection vers la page de connexion
   };
 
   return (

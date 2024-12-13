@@ -1,16 +1,21 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { useSelector } from "react-redux";
 
 // Import des composants
-import HomePage from '../components/homepage/HomePage';
-import LoginPage from '../components/loginpage/LoginPage';
-import UserPage from '../components/userpage/UserPage';
-import Navbar from '../components/layouts/Navbar';
-import Footer from '../components/layouts/Footer';
+import HomePage from "../components/homepage/HomePage";
+import LoginPage from "../components/loginpage/LoginPage";
+import UserPage from "../components/userpage/UserPage";
+import Navbar from "../components/layouts/Navbar";
+import Footer from "../components/layouts/Footer";
 
 // Import des styles
-import '../app/App.scss';
+import "../app/App.scss";
 
 const App = () => {
   // Récupérer l'état d'authentification depuis Redux
@@ -30,11 +35,7 @@ const App = () => {
         <Route
           path="/user"
           element={
-            isAuthenticated ? (
-              <UserPage />
-            ) : (
-              <Navigate to="/sign-in" replace />
-            )
+            isAuthenticated ? <UserPage /> : <Navigate to="/sign-in" replace />
           }
         />
       </Routes>
