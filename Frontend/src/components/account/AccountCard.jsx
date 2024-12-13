@@ -1,30 +1,42 @@
+import "../account/AccountCard.scss";
+import React from "react";
 
-import '../account/AccountCard.scss';
-import React from 'react';
+export function AccountCard() {
+  const accounts = [
+    {
+      title: "Argent Bank Checking (x8349)",
+      amount: "$2,082.79",
+      description: "Available Balance",
+    },
+    {
+      title: "Argent Bank Savings (x6712)",
+      amount: "$10,928.42",
+      description: "Available Balance",
+    },
+    {
+      title: "Argent Bank Credit Card (x8349)",
+      amount: "$184.30",
+      description: "Current Balance",
+    },
+  ];
 
-const AccountCard = ({ 
-  title, 
-  amount, 
-  description, 
-  onViewTransactions 
-}) => {
+  const handleViewTransactions = () => {
+    console.log("Viewing transactions...");
+  };
+
   return (
-    <section className="account">
-      <div className="account-content-wrapper">
-        <h3 className="account-title">{title}</h3>
-        <p className="account-amount">{amount}</p>
-        <p className="account-amount-description">{description}</p>
-        {onViewTransactions && (
-          <button 
-            className="transaction-button"
-            onClick={onViewTransactions}
-          >
-            View Transactions
-          </button>
-        )}
-      </div>
-    </section>
+    <div className="transactions">
+      {accounts.map((account, index) => (
+        <AccountCard
+          key={index}
+          title={account.title}
+          amount={account.amount}
+          description={account.description}
+          onViewTransactions={handleViewTransactions}
+        />
+      ))}
+    </div>
   );
-};
+}
 
 export default AccountCard;

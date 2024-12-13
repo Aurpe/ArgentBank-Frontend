@@ -15,8 +15,8 @@ const LoginPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(
-      loginUser)
+    dispatch(loginUser({ email: username, password }));
+  };
 
   useEffect(() => {
     if (isAuthenticated) {

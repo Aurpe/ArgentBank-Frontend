@@ -18,31 +18,9 @@ const UserPage = () => {
     <div>
       <Header />
       <main className="main bg-dark">
-        <h2>Welcome, {user?.firstName || "User"}!</h2>
-        <AccountCard
-          title="Argent Bank Checking (x8349)"
-          amount="$2,082.79"
-          description="Available Balance"
-          onViewTransactions={() => {
-            console.log("View transactions for checking account");
-          }}
-        />
-        <AccountCard
-          title="Argent Bank Savings (x6712)"
-          amount="$10,928.42"
-          description="Available Balance"
-          onViewTransactions={() => {
-            console.log("View transactions for savings account");
-          }}
-        />
-        <AccountCard
-          title="Argent Bank Savings (x6712)"
-          amount="$10,928.42"
-          description="Available Balance"
-          onViewTransactions={() => {
-            console.log("View transactions for savings account");
-          }}
-        />
+        <h1>Welcome, {user?.firstName || "User"}!</h1>
+        <button className="edit-button">Edit Name</button>
+        <AccountCard />
       </main>
     </div>
   );
