@@ -5,7 +5,7 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:3001/api/v1/login", {
+      const response = await fetch("http://localhost:3001/api/v1/user/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -19,7 +19,7 @@ export const loginUser = createAsyncThunk(
       }
 
       const data = await response.json();
-      return data; // Retourne les données utilisateur
+      return data;
     } catch (error) {
       return rejectWithValue(error.message);
     }

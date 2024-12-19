@@ -2,8 +2,8 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import "../layouts/Navbar.scss";
-import argentBankLogo from "../../assets/img/argentBankLogo.png";
 import { logout } from "../../store/redux";
+import { argentBankLogo } from "../../assets/img/argentBankLogo.png";
 
 const Navbar = ({ isAuthenticated, userName }) => {
   const dispatch = useDispatch();
@@ -30,10 +30,10 @@ const Navbar = ({ isAuthenticated, userName }) => {
               <i className="fa fa-user-circle"></i>
               {userName}
             </Link>
-            <button className="main-nav-item" onClick={handleLogout}>
+            <Link className="main-nav-item" onClick={handleLogout}>
               <i className="fa fa-sign-out"></i>
               Sign Out
-            </button>
+            </Link>
           </>
         ) : (
           <Link className="main-nav-item" to="/sign-in">

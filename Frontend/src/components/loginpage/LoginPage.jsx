@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import LoginForm from "../common/LoginForm";
 import "../loginpage/LoginPage.scss";
-import { loginUser } from "../../api/fetchLoginUser";
+import { loginUser } from "../../api/LoginUser";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");

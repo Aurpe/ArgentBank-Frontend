@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginUser } from "../api/fetchLoginUser";
-import { fetchUser } from "../api/fetchUser";
+import { loginUser } from "../api/LoginUser";
+import { fetchUser } from "../api/User";
 
 const authSlice = createSlice({
   name: "auth",

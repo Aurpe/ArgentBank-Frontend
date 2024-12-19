@@ -16,7 +16,6 @@ import Footer from "../components/layouts/Footer";
 
 // Import des styles
 import "../app/App.scss";
-
 const App = () => {
   // Récupérer l'état d'authentification depuis Redux
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -29,7 +28,18 @@ const App = () => {
         <Route path="/" element={<HomePage />} />
 
         {/* Route vers la page de connexion */}
-        <Route path="/sign-in" element={<LoginPage />} />
+        <Route
+          path="/sign-in"
+          element={
+            isAuthenticated ? (
+              // Si authentifié, redirige directement vers la page utilisateur
+              <Navigate to="/user" replace />
+            ) : (
+              // Sinon, affiche la page de connexion
+              <LoginPage />
+            )
+          }
+        />
 
         {/* Route protégée pour la page utilisateur */}
         <Route
