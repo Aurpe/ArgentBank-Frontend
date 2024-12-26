@@ -45,3 +45,4 @@ export const fetchUser = createAsyncThunk(
     }
   }
 );
+export default fetchUser;

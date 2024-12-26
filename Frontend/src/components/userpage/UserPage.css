@@ -2,6 +2,11 @@
   flex: 1;
 }
 
+.header {
+  color: #fff;
+  margin-bottom: 2rem;
+}
+
 .account {
   display: flex;
   justify-content: space-between;

@@ -1,21 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { updateUserName } from "../../store/userAction"; // Import de l'action Redux
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import UserNameUpdate  from '../../api/UserNameUpdate';
+import User from '../../api/User';  
+import userReducer from '../../store/userReducer';
 
 export function EditButton() {
   const [isEditing, setIsEditing] = useState(false);
-  const [userName, setUserName] = useState("");
-
-  const { userDetails, isLoggedIn, loading, error } = useSelector(
-    (state) => state.auth
-  );
-
+  const [userName, setUserName] = useState('');
+  const [error, setError] = useState(null);  // Pour gérer les erreurs
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const loading = useSelector((state) => state.auth.loading);  // Gérer l'état de chargement
   const dispatch = useDispatch();
 
+  // Récupérer les informations utilisateur lors du montage du composant
   useEffect(() => {
-    // Initialise le userName avec celui récupéré dans Redux (userDetails)
-    setUserName(userDetails?.userName || "");
-  }, [userDetails]);
+    if (!userDetails) {
+      dispatch(User()); // Récupérer les infos utilisateur uniquement si elles ne sont pas dans Redux
+    }
+    if (userDetails?.userName) {
+      setUserName(userDetails.userName);
+    }
+  }, [dispatch, userDetails]);
 
   const handleToggleEditForm = () => {
     setIsEditing(!isEditing);
@@ -26,12 +32,15 @@ export function EditButton() {
   };
 
   const handleSave = async () => {
-    const token = localStorage.getItem("token"); // Récupération du token d'authentification
-    if (token) {
-      // Appel de l'action Redux pour mettre à jour le nom d'utilisateur via l'API
-      dispatch(updateUserName({ newUserName: userName, token }));
-    } else {
-      console.error("Token is missing");
+    try {
+      const token = localStorage.getItem('token');
+      const result = await UserNameUpdate(userName, token);
+      console.log("User profile updated:", result);
+      dispatch(userReducer({ userName }));
+      setIsEditing(false);  // Fermer le formulaire après l'enregistrement
+    } catch (error) {
+      setError;
+      console.error("Error updating user profile:", error);
     }
   };
 
@@ -51,35 +60,17 @@ export function EditButton() {
               onChange={handleUserNameChange}
             />
           </div>
-          <div className="inputContainer">
-            <label htmlFor="firstName">First name:</label>
-            <input
-              className="readOnly"
-              type="text"
-              id="firstName"
-              value={userDetails?.firstName}
-              readOnly
-            />
-          </div>
-          <div className="inputContainer">
-            <label htmlFor="lastName">Last name:</label>
-            <input
-              className="readOnly"
-              type="text"
-              id="lastName"
-              value={userDetails?.lastName}
-              readOnly
-            />
-          </div>
           <div className="inputButton">
             <button onClick={handleSave} disabled={loading}>
-              {loading ? "Saving..." : "Save"}
+              {loading ? 'Saving...' : 'Save'}
             </button>
             <button onClick={handleToggleEditForm}>Cancel</button>
           </div>
-          {error && <p className="error">{error}</p>}
         </div>
       )}
+      {error && <p className="error">{error}</p>}
     </div>
   );
-}
+  
+  
+

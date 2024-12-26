@@ -3,7 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import "../layouts/Navbar.scss";
 import { logout } from "../../store/redux";
-import { argentBankLogo } from "../../assets/img/argentBankLogo.png";
+import argentBankLogo from "../../assets/img/argentBankLogo.png";
+
+
 
 const Navbar = ({ isAuthenticated, userName }) => {
   const dispatch = useDispatch();
