@@ -1,8 +1,9 @@
+// @ts-nocheck
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import "../layouts/Navbar.scss";
-import { logout } from "../../store/redux";
+import { logout } from "../../store/authSlice";
 import argentBankLogo from "../../assets/img/argentBankLogo.png";
 
 

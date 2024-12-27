@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import UserNameUpdate  from '../../api/UserNameUpdate';
-import User from '../../api/User';  
-import userReducer from '../../store/userReducer';
+import { updateUsername, fetchUser } from "../../store/authActions";
 
 export function EditButton() {
   const [isEditing, setIsEditing] = useState(false);
@@ -16,7 +14,7 @@ export function EditButton() {
   // Récupérer les informations utilisateur lors du montage du composant
   useEffect(() => {
     if (!userDetails) {
-      dispatch(User()); // Récupérer les infos utilisateur uniquement si elles ne sont pas dans Redux
+      dispatch(fetchUser()); // Récupérer les infos utilisateur uniquement si elles ne sont pas dans Redux
     }
     if (userDetails?.userName) {
       setUserName(userDetails.userName);
@@ -32,27 +30,31 @@ export function EditButton() {
   };
 
   const handleSave = async () => {
+    if (userName === userDetails.userName) {
+      console.log('Le nom d\'utilisateur n\'a pas changé');
+      setIsEditing(false);  // Ferme le formulaire
+      return;  // Ignore la mise à jour du profil
+    }
     try {
       const token = localStorage.getItem('token');
-      const result = await UserNameUpdate(userName, token);
-      console.log("User profile updated:", result);
-      dispatch(userReducer({ userName }));
-      setIsEditing(false);  // Fermer le formulaire après l'enregistrement
+      const result = await dispatch(updateUsername(userName, token));  // Appel à l'action pour mettre à jour le nom d'utilisateur
+      console.log("Profil utilisateur mis à jour :", result);
+      setIsEditing(false);  // Ferme le formulaire après l'enregistrement
     } catch (error) {
-      setError;
-      console.error("Error updating user profile:", error);
+      setError(error.message);
+      console.error("Erreur lors de la mise à jour du profil utilisateur :", error);
     }
   };
 
   return (
     <div className="edit">
       <button className="edit-button" onClick={handleToggleEditForm}>
-        Edit Name
+        Modifier le nom
       </button>
       {isEditing && isLoggedIn && (
         <div className="inputName">
           <div className="inputContainer">
-            <label htmlFor="userName">User name:</label>
+            <label htmlFor="userName">Nom d'utilisateur :</label>
             <input
               type="text"
               id="userName"
@@ -62,15 +64,13 @@ export function EditButton() {
           </div>
           <div className="inputButton">
             <button onClick={handleSave} disabled={loading}>
-              {loading ? 'Saving...' : 'Save'}
+              {loading ? 'Enregistrement...' : 'Sauvegarder'}
             </button>
-            <button onClick={handleToggleEditForm}>Cancel</button>
+            <button onClick={handleToggleEditForm}>Annuler</button>
           </div>
         </div>
       )}
       {error && <p className="error">{error}</p>}
     </div>
   );
-  
-  
-
+}

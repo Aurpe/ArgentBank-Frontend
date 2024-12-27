@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../../api/LoginUser";
+import { loginUser } from "../../store/authActions";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const LoginForm = () => {
       navigate("/user");
     }
   }, [isAuthenticated, navigate]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
