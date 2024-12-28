@@ -1,0 +1,208 @@
+openapi: 3.0.0
+info:
+  title: API Transactions
+  description: API permettant de gérer les transactions d'un utilisateur, y compris la consultation des transactions du mois en cours, la consultation des détails d'une transaction et la mise à jour des informations d'une transaction.
+  version: 1.0.0
+  contact:
+    name: Support Technique
+    email: support@example.com
+    url: https://example.com
+
+paths:
+  /transactions/current-month:
+    get:
+      summary: Récupérer les transactions du mois en cours
+      description: Permet de visualiser toutes les transactions de l'utilisateur pour le mois en cours, groupées par compte.
+      operationId: getTransactionsForCurrentMonth
+      tags:
+        - Transactions
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            description: Le token d'authentification Bearer
+      responses:
+        "200":
+          description: Transactions récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        transactionId:
+                          type: string
+                          description: Identifiant unique de la transaction
+                        accountId:
+                          type: string
+                          description: Identifiant du compte lié à la transaction
+                        amount:
+                          type: number
+                          format: float
+                          description: Montant de la transaction
+                        description:
+                          type: string
+                          description: Description de la transaction
+                        date:
+                          type: string
+                          format: date
+                          description: Date de la transaction
+        "401":
+          description: Non autorisé, token manquant ou invalide
+        "500":
+          description: Erreur serveur
+
+  /transactions/{transactionId}:
+    get:
+      summary: Récupérer les détails d'une transaction
+      description: Permet de visualiser les détails d'une transaction spécifique.
+      operationId: getTransactionDetails
+      tags:
+        - Transactions
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            description: Le token d'authentification Bearer
+        - name: transactionId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Identifiant de la transaction
+      responses:
+        "200":
+          description: Détails de la transaction récupérés avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactionId:
+                    type: string
+                  accountId:
+                    type: string
+                  amount:
+                    type: number
+                    format: float
+                  description:
+                    type: string
+                  date:
+                    type: string
+                    format: date
+        "404":
+          description: Transaction non trouvée
+        "401":
+          description: Non autorisé, token manquant ou invalide
+        "500":
+          description: Erreur serveur
+
+    put:
+      summary: Mettre à jour les informations d'une transaction
+      description: Permet de modifier des informations spécifiques d'une transaction (par exemple, la description ou le montant).
+      operationId: updateTransaction
+      tags:
+        - Transactions
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            description: Le token d'authentification Bearer
+        - name: transactionId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Identifiant de la transaction à mettre à jour
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: float
+                  description: Montant mis à jour de la transaction
+                description:
+                  type: string
+                  description: Nouvelle description de la transaction
+                date:
+                  type: string
+                  format: date
+                  description: Nouvelle date de la transaction
+      responses:
+        "200":
+          description: Transaction mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactionId:
+                    type: string
+                  accountId:
+                    type: string
+                  amount:
+                    type: number
+                    format: float
+                  description:
+                    type: string
+                  date:
+                    type: string
+                    format: date
+        "400":
+          description: Données invalides ou champs manquants
+        "404":
+          description: Transaction non trouvée
+        "401":
+          description: Non autorisé, token manquant ou invalide
+        "500":
+          description: Erreur serveur
+
+    delete:
+      summary: Supprimer une transaction
+      description: Permet de supprimer une transaction. Notez que cette opération ne sera pas disponible dans cette version de l'API.
+      operationId: deleteTransaction
+      tags:
+        - Transactions
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            description: Le token d'authentification Bearer
+        - name: transactionId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Identifiant de la transaction à supprimer
+      responses:
+        "405":
+          description: Méthode non autorisée (suppression non supportée)
+        "401":
+          description: Non autorisé, token manquant ou invalide
+        "500":
+          description: Erreur serveur
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - BearerAuth: []

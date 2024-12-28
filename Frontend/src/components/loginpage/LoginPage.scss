@@ -9,6 +9,7 @@
     border-color: #00bc77;
     background-color: #00bc77;
     color: #fff;
+    text-decoration:underline;
   }
   
   .sign-in-content {
@@ -47,4 +48,14 @@
     padding: 5px;
     font-size: 1.2rem;
   }
+
+  .fa{
+    display: inline-block;
+    font: normal normal normal 14px / 1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+  }
+
+ 
   

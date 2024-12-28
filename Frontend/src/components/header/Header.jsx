@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUsername } from "../../store/authActions";  // Assurez-vous que vous importez l'action correcte
 import "../header/Header.scss";
@@ -11,60 +11,82 @@ const Header = () => {
   
   // État local pour gérer l'édition du nom d'utilisateur
   const [isEditing, setIsEditing] = useState(false);
-  const [userName, setUserName] = useState(user?.userName || '');
+  const [userName, setUserName] = useState("");
 
-  // Fonction pour basculer entre le mode édition et lecture
+  // Synchroniser userName avec user
+  useEffect(() => {
+    if (user) {
+      setUserName(user.body?.userName || ""); // Utilisez une chaîne vide comme valeur par défaut
+    }
+  }, [user]);
+
+  // Journaliser les données utilisateur pour déboguer
+  useEffect(() => {
+    console.log("User data:", user);
+  }, [user]);
+
+  // Gestion de l'édition du nom d'utilisateur
   const handleToggleEditForm = () => {
     setIsEditing(!isEditing);
   };
 
-  // Fonction pour gérer les changements dans le champ du nom d'utilisateur
   const handleUserNameChange = (event) => {
     setUserName(event.target.value);
   };
 
-  // Fonction pour enregistrer les modifications du nom d'utilisateur
+  // Fonction pour enregistrer le nouveau nom d'utilisateur
   const handleSave = async () => {
     try {
-      await dispatch(updateUsername(userName));  // Mettre à jour le nom d'utilisateur via Redux
-      setIsEditing(false);  // Fermer le formulaire après l'enregistrement
+      const result = await dispatch(
+        updateUsername({ UpdateUsername: userName })
+      ).unwrap(); // Utilisation de unwrap pour obtenir la réponse directement
+      setUserName(result.userName); // Mettez à jour localement avec les données retournées
+      setIsEditing(false); // Fermer le formulaire d'édition
     } catch (error) {
-      console.error("Erreur lors de la mise à jour du nom d'utilisateur :", error);
+      console.error("Error updating user profile:", error);
     }
   };
 
   return (
     <div className="header">
-      <h1>Welcome Back {user?.firstName || "User"}!</h1>
-
-      {/* Bouton pour activer ou désactiver le mode édition */}
-      <button className="edit-button" onClick={handleToggleEditForm}>
-        Edit Name
-      </button>
-
-      {/* Section pour modifier le nom d'utilisateur */}
-      {isEditing && (
-        <div className="inputName">
-          <div className="inputContainer">
-            <label htmlFor="userName">User name:</label>
-            <input
-              type="text"
-              id="userName"
-              value={userName}
-              onChange={handleUserNameChange}
-            />
-          </div>
-          <button onClick={handleSave} disabled={loading}>
-            {loading ? "Saving..." : "Save Changes"}
-          </button>
+      {loading ? (
+        <p>Chargement des données utilisateur...</p>
+      ) : error ? (
+        <p className="error-message">{error}</p>
+      ) : user ? (
+        <div>
+          <h1>Welcome, {userName} !</h1>
+          <p>
+            {user.body?.firstName} {user.body?.lastName}
+          </p>
+          {isEditing ? (
+            <div>
+              <input
+                type="text"
+                value={userName || ""} // Toujours utiliser une chaîne vide
+                onChange={handleUserNameChange}
+              />
+              <button onClick={handleSave}>Sauvegarder</button>
+              <button onClick={handleToggleEditForm}>Annuler</button>
+            </div>
+          ) : (
+            <button className="edit-button" onClick={handleToggleEditForm}>
+              Edit Name
+            </button>
+          )}
         </div>
+      ) : (
+        <p>Aucune donnée utilisateur trouvée.</p>
       )}
-
-      {/* Affichage des erreurs si elles existent */}
-      {error && <p className="error">{error}</p>}
     </div>
   );
 };
 
 export default Header;
+
+
+
+
+    
+
 

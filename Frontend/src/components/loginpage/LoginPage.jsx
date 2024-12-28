@@ -11,30 +11,25 @@ const LoginPage = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  // Récupérer les données d'authentification du store (isAuthenticated, error)
   const { isAuthenticated, error } = useSelector((state) => state.auth);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(loginUser({ email, password }));
+    dispatch(loginUser({ email: username, password }));
   };
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/user"); // Rediriger l'utilisateur vers la page d'accueil une fois authentifié
+      navigate("/user");
     }
   }, [isAuthenticated, navigate]);
 
+
+
   return (
-    <main>
-      <section>
-        {error && <p className="error-message">{error}</p>} {/* Afficher l'erreur si présente */}
-        <LoginForm 
-          
-        />
-      </section>
-    </main>
+    
+        <LoginForm />
+      
   );
 };
 

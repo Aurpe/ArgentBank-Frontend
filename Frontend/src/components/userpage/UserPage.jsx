@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { updateUsername, loginUser, fetchUser } from "../../store/authActions";
+import { updateUsername, fetchUser } from "../../store/authActions";
 import Header from "../header/Header";
 import TransactionCard from "../account/TransactionCard";
 import "../userpage/UserPage.scss";
-import EditUsername from "../common/editUsername"
 
 const UserPage = () => {
   const dispatch = useDispatch();
@@ -17,16 +16,29 @@ const UserPage = () => {
   );
 
   const [isEditing, setIsEditing] = useState(false);
-  const [userName, setUserName] = useState(user?.userName || '');
+  const [userName, setUserName] = useState(""); // Initialisez à vide
 
   // Redirection si l'utilisateur n'est pas connecté
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/login");
+    const token = localStorage.getItem("token");
+    if (token) {
+      dispatch(fetchUser(token));
     } else {
-      dispatch((updateUsername)); // Charger les détails de l'utilisateur au montage
+      navigate("/login");
     }
-  }, [isAuthenticated, navigate, dispatch]);
+  }, [dispatch, navigate]);
+
+  // Synchroniser userName avec user
+  useEffect(() => {
+    if (user) {
+      setUserName(user.body.userName || ""); // Utilisez une chaîne vide comme valeur par défaut
+    }
+  }, [user]);
+
+  // Journaliser les données utilisateur pour déboguer
+  useEffect(() => {
+    console.log("User data:", user);
+  }, [user]);
 
   // Gestion de l'édition du nom d'utilisateur
   const handleToggleEditForm = () => {
@@ -40,20 +52,22 @@ const UserPage = () => {
   // Fonction pour enregistrer le nouveau nom d'utilisateur
   const handleSave = async () => {
     try {
-      const token = localStorage.getItem('token');
-      await dispatch(updateUsername(userName)); // Dispatcher seulement le nouveau nom d'utilisateur
-      setIsEditing(false);  // Fermer le formulaire après l'enregistrement
+      const token = localStorage.getItem("token");
+      const result = await dispatch(
+        updateUsername({ UpdateUsername: userName })
+      ).unwrap();
+      setUserName(result.userName); // Mettez à jour localement avec les données retournées
+      setIsEditing(false);
     } catch (error) {
       console.error("Error updating user profile:", error);
     }
   };
 
+
   return (
     <div>
       <main className="main bg-dark">
         <Header />
-        <EditUsername />
-      
         <TransactionCard />
       </main>
     </div>
