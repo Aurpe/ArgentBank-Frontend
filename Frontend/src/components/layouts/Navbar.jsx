@@ -11,13 +11,12 @@ const Navbar = ({ isAuthenticated }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Récupérer l'état utilisateur et l'authentification depuis le store Redux
-  const userName = useSelector((state) => state.auth.userName);
+  const user = useSelector((state) => state.auth.user);
+  console.log(user);
 
   // Récupérer le userName, en utilisant une valeur par défaut si l'utilisateur n'est pas connecté
-  const user = user?.userName || "Guest";
+  const userName = user?.userName || "Guest";
 
-  
 
   const handleLogout = () => {
     dispatch(logout()); // Déconnexion via Redux Toolkit
