@@ -1,28 +1,37 @@
 openapi: 3.0.0
 info:
-  title: API Transactions
-  description: API pour gérer les transactions des utilisateurs. Permet de visualiser les transactions par compte, afficher les détails d'une transaction, ainsi que modifier ou supprimer des informations sur une transaction.
+  title: API de Gestion des Transactions Bancaires
+  description: >-
+    API pour gérer les transactions bancaires d'un utilisateur, incluant la
+    possibilité de visualiser, ajouter, modifier des informations sur les
+    transactions.
   version: 1.0.0
-  contact:
-    name: Support Technique
-    email: support@example.com
-    url: https://example.com
-
+servers:
+  - url: http://localhost:3000
+    description: Serveur de développement local
 paths:
-  /transactions/current-month:
+  /api/transactions/month:
     get:
-      summary: Récupérer les transactions du mois en cours
-      description: Permet de visualiser toutes les transactions d'un utilisateur pour le mois en cours, groupées par compte.
-      operationId: getTransactionsForCurrentMonth
-      tags:
-        - Transactions
+      summary: >-
+        Visualisation des transactions pour le mois en cours, groupées par
+        compte
+      description: >-
+        Affiche toutes les transactions pour le mois en cours, groupées par
+        compte.
       parameters:
-        - name: Authorization
-          in: header
+        - name: account_id
+          in: query
+          description: L'identifiant du compte.
           required: true
           schema:
             type: string
-            description: Token d'authentification Bearer
+        - name: month
+          in: query
+          description: Le mois pour lequel les transactions doivent être récupérées.
+          required: true
+          schema:
+            type: string
+            default: current_month
       responses:
         '200':
           description: Transactions récupérées avec succès
@@ -31,58 +40,58 @@ paths:
               schema:
                 type: object
                 properties:
-                  transactions:
+                  accounts:
                     type: array
                     items:
                       type: object
                       properties:
-                        accountId:
+                        account_id:
                           type: string
-                          description: Identifiant du compte
+                        account_name:
+                          type: string
                         transactions:
                           type: array
                           items:
                             type: object
                             properties:
-                              transactionId:
+                              transaction_id:
                                 type: string
-                                description: Identifiant unique de la transaction
                               amount:
                                 type: number
                                 format: float
-                                description: Montant de la transaction
-                              description:
+                              type:
                                 type: string
-                                description: Description de la transaction
+                                enum:
+                                  - income
+                                  - expense
                               date:
                                 type: string
                                 format: date
-                                description: Date de la transaction
-        '401':
-          description: Non autorisé
-        '500':
-          description: Erreur serveur
-
-  /transactions/{transactionId}:
+                              description:
+                                type: string
+                              categories:
+                                type: array
+                                items:
+                                  type: string
+                              note:
+                                type: string
+                              balance:
+                                type: number
+                                format: float
+                  message:
+                    type: string
+                    example: Transactions successfully fetched.
+  /api/transactions/{transaction_id}:
     get:
-      summary: Récupérer les détails d'une transaction
-      description: Permet de visualiser les détails d'une transaction spécifique.
-      operationId: getTransactionDetails
-      tags:
-        - Transactions
+      summary: Visualisation des détails d'une transaction spécifique
+      description: Affiche les détails d'une transaction spécifique.
       parameters:
-        - name: Authorization
-          in: header
-          required: true
-          schema:
-            type: string
-            description: Token d'authentification Bearer
-        - name: transactionId
+        - name: transaction_id
           in: path
           required: true
+          description: L'identifiant de la transaction
           schema:
             type: string
-            description: Identifiant unique de la transaction
       responses:
         '200':
           description: Détails de la transaction récupérés avec succès
@@ -91,170 +100,177 @@ paths:
               schema:
                 type: object
                 properties:
-                  transactionId:
+                  transaction:
+                    type: object
+                    properties:
+                      transaction_id:
+                        type: string
+                      amount:
+                        type: number
+                        format: float
+                      type:
+                        type: string
+                        enum:
+                          - income
+                          - expense
+                      date:
+                        type: string
+                        format: date
+                      description:
+                        type: string
+                      categories:
+                        type: array
+                        items:
+                          type: string
+                      note:
+                        type: string
+                      balance:
+                        type: number
+                        format: float
+                  message:
                     type: string
-                  accountId:
-                    type: string
-                  amount:
-                    type: number
-                    format: float
-                  description:
-                    type: string
-                  date:
-                    type: string
-                    format: date
-        '404':
-          description: Transaction non trouvée
-        '401':
-          description: Non autorisé
-        '500':
-          description: Erreur serveur
-
+                    example: Transaction details successfully fetched.
+  /api/transactions/{transaction_id}/update:
     put:
-      summary: Modifier les informations d'une transaction
-      description: Permet de mettre à jour les informations d'une transaction spécifique.
-      operationId: updateTransaction
-      tags:
-        - Transactions
+      summary: Ajout d'informations supplémentaires à une transaction existante
+      description: >-
+        Ajoute des informations supplémentaires à une transaction existante,
+        telles que le type, les catégories, et la note.
       parameters:
-        - name: Authorization
-          in: header
-          required: true
-          schema:
-            type: string
-            description: Token d'authentification Bearer
-        - name: transactionId
+        - name: transaction_id
           in: path
           required: true
+          description: L'identifiant de la transaction
           schema:
             type: string
-            description: Identifiant unique de la transaction
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                amount:
-                  type: number
-                  format: float
-                  description: Nouveau montant de la transaction
-                description:
-                  type: string
-                  description: Nouvelle description de la transaction
-                date:
-                  type: string
-                  format: date
-                  description: Nouvelle date de la transaction
+        - name: type
+          in: query
+          required: true
+          description: Le type de la transaction
+          schema:
+            type: string
+            enum:
+              - income
+              - expense
+        - name: categories
+          in: query
+          description: Les catégories associées à la transaction
+          schema:
+            type: array
+            items:
+              type: string
+        - name: note
+          in: query
+          description: Note à ajouter à la transaction
+          schema:
+            type: string
       responses:
         '200':
-          description: Transaction mise à jour avec succès
-        '400':
-          description: Données invalides
-        '404':
-          description: Transaction non trouvée
-        '401':
-          description: Non autorisé
-        '500':
-          description: Erreur serveur
-
-    delete:
-      summary: Supprimer une transaction
-      description: Permet de supprimer une transaction spécifique.
-      operationId: deleteTransaction
-      tags:
-        - Transactions
-      parameters:
-        - name: Authorization
-          in: header
-          required: true
-          schema:
-            type: string
-            description: Token d'authentification Bearer
-        - name: transactionId
-          in: path
-          required: true
-          schema:
-            type: string
-            description: Identifiant unique de la transaction
-      responses:
-        '204':
-          description: Transaction supprimée avec succès
-        '404':
-          description: Transaction non trouvée
-        '401':
-          description: Non autorisé
-        '500':
-          description: Erreur serveur
-
-  /transactions:
-    post:
-      summary: Ajouter une nouvelle transaction
-      description: Permet d'ajouter une transaction à un compte existant.
-      operationId: addTransaction
-      tags:
-        - Transactions
-      parameters:
-        - name: Authorization
-          in: header
-          required: true
-          schema:
-            type: string
-            description: Token d'authentification Bearer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                accountId:
-                  type: string
-                  description: Identifiant du compte
-                amount:
-                  type: number
-                  format: float
-                  description: Montant de la transaction
-                description:
-                  type: string
-                  description: Description de la transaction
-                date:
-                  type: string
-                  format: date
-                  description: Date de la transaction
-      responses:
-        '201':
-          description: Transaction ajoutée avec succès
+          description: Informations ajoutées avec succès
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  transactionId:
+                  message:
                     type: string
-                  accountId:
+                    example: Transaction information updated successfully.
+                  transaction:
+                    type: object
+                    properties:
+                      transaction_id:
+                        type: string
+                      type:
+                        type: string
+                      categories:
+                        type: array
+                        items:
+                          type: string
+                      note:
+                        type: string
+  /api/transactions/{transaction_id}/modify:
+    patch:
+      summary: Modification des informations d'une transaction existante
+      description: >-
+        Modifie les informations d'une transaction existante, telles que le
+        type, les catégories et la note.
+      parameters:
+        - name: transaction_id
+          in: path
+          required: true
+          description: L'identifiant de la transaction
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Le type de la transaction
+          schema:
+            type: string
+            enum:
+              - income
+              - expense
+        - name: categories
+          in: query
+          description: Les catégories associées à la transaction
+          schema:
+            type: array
+            items:
+              type: string
+        - name: note
+          in: query
+          description: Note à modifier pour la transaction
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Informations modifiées avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
                     type: string
-                  amount:
-                    type: number
-                    format: float
-                  description:
-                    type: string
-                  date:
-                    type: string
-                    format: date
-        '400':
-          description: Données invalides
-        '401':
-          description: Non autorisé
-        '500':
-          description: Erreur serveur
-
+                    example: Transaction information modified successfully.
+                  transaction:
+                    type: object
+                    properties:
+                      transaction_id:
+                        type: string
+                      type:
+                        type: string
+                      categories:
+                        type: array
+                        items:
+                          type: string
+                      note:
+                        type: string
 components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-  security:
-    - BearerAuth: []
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        transaction_id:
+          type: string
+        amount:
+          type: number
+          format: float
+        type:
+          type: string
+          enum:
+            - income
+            - expense
+        date:
+          type: string
+          format: date
+        description:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
+        note:
+          type: string
+        balance:
+          type: number
+          format: float

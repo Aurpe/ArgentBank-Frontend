@@ -4,19 +4,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import "../layouts/Navbar.scss";
 import { logout } from "../../store/authSlice";
-import argentBankLogo from "../../assets/img/argentBankLogo.png";
+import argentBankLogo from "../../assets/img/argentBankLogo.webp";
 
-
-const Navbar = ({ isAuthenticated }) => {
+const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const user = useSelector((state) => state.auth.user);
-  console.log(user);
+  // Récupération des données utilisateur et de l'état d'authentification
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
 
-  // Récupérer le userName, en utilisant une valeur par défaut si l'utilisateur n'est pas connecté
-  const userName = user?.userName || "Guest";
-
+  // Extraction sécurisée du nom d'utilisateur
+  const userName = user?.body?.userName || "Guest";
 
   const handleLogout = () => {
     dispatch(logout()); // Déconnexion via Redux Toolkit
@@ -31,6 +29,7 @@ const Navbar = ({ isAuthenticated }) => {
           src={argentBankLogo}
           alt="Argent Bank Logo"
         />
+
       </Link>
       <div>
         {isAuthenticated ? (

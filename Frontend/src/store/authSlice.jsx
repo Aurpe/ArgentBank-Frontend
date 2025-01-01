@@ -19,6 +19,7 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
   },
   extraReducers: (builder) => {
@@ -34,35 +35,40 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         state.user = action.payload.user;
         localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = { type: "LOGIN_ERROR", message: action.payload }; // Ajouter un type d'erreur ici
       })
 
       // Récupération des détails utilisateur
       .addCase(fetchUser.fulfilled, (state, action) => {
+        console.log("Fetched user data:", action.payload);
         state.user = action.payload;
         state.error = null;
       })
       .addCase(fetchUser.rejected, (state, action) => {
-        state.error = action.payload;
+        state.error = { type: "FETCH_USER_ERROR", message: action.payload }; // Ajouter un type d'erreur ici
       })
 
+      // Mise à jour du nom d'utilisateur
       .addCase(updateUsername.fulfilled, (state, action) => {
+        console.log("Updated userName:", action.payload.userName);
         state.loading = false;
         state.user = { ...state.user, userName: action.payload.userName }; // Met à jour uniquement userName
         state.error = null;
       })
       .addCase(updateUsername.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload; // Capture l'erreur pour affichage
+        state.error = { type: "UPDATE_USERNAME_ERROR", message: action.payload }; // Ajouter un type d'erreur ici
       });
-      
   },
 });
 
 export const { logout } = authSlice.actions;
 export default authSlice.reducer;
+
+
 
 

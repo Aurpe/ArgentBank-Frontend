@@ -12,6 +12,7 @@ const UserPage = () => {
 
   // Accédez aux données de l'utilisateur et à l'état de l'authentification depuis Redux
   const { isAuthenticated, user, loading, error } = useSelector(
+    // @ts-ignore
     (state) => state.auth
   );
 

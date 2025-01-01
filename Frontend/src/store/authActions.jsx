@@ -3,9 +3,9 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 // URL de base pour l'API
 const API_BASE_URL = "http://localhost:3001/api/v1";
 
-// Action: Connexion (login)
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
+  // @ts-ignore
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const response = await fetch(`${API_BASE_URL}/user/login`, {
@@ -38,10 +38,11 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Action: Récupérer les détails de l'utilisateur
+
 export const fetchUser = createAsyncThunk(
   "auth/fetchUser",
   async (token, { rejectWithValue }) => {
+    // @ts-ignore
     if (!token) {
       return rejectWithValue("Le token d'authentification est manquant.");
     }
@@ -66,6 +67,7 @@ export const fetchUser = createAsyncThunk(
       console.log("Données utilisateur récupérées :", data);
       return data;
     } catch (error) {
+      console.error ("Echec recuperation utilisateur:", error.message)
       return rejectWithValue(error.message);
     }
   }
@@ -74,6 +76,7 @@ export const fetchUser = createAsyncThunk(
 // Action: Mettre à jour le nom d'utilisateur
 export const updateUsername = createAsyncThunk(
   "auth/updateUsername",
+  // @ts-ignore
   async ({ UpdateUsername }, { rejectWithValue }) => {
     try {
       const response = await fetch(`${API_BASE_URL}/user/profile`, {

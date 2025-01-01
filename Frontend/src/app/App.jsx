@@ -18,11 +18,14 @@ import Footer from "../components/layouts/Footer";
 import "../app/App.scss";
 const App = () => {
   // Récupérer l'état d'authentification depuis Redux
+  // @ts-ignore
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   return (
     <Router>
-      <Navbar isAuthenticated={isAuthenticated} userName={user?.firstName} />
+      <Navbar 
+// @ts-ignore
+      isAuthenticated={isAuthenticated} userName={user?.firstName} />
       <Routes>
         {/* Route vers la page d'accueil */}
         <Route path="/" element={<HomePage />} />
