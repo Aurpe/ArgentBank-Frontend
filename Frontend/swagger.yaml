@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: API de Gestion des Transactions Bancaires
+  title: API Argent-Bank
   description: >-
     API pour gérer les transactions bancaires d'un utilisateur, incluant la
     possibilité de visualiser, ajouter, modifier des informations sur les
@@ -32,6 +32,12 @@ paths:
           schema:
             type: string
             default: current_month
+        - name: Authorization
+          in: header
+          description: Le token d'authentification
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Transactions récupérées avec succès
@@ -81,6 +87,12 @@ paths:
                   message:
                     type: string
                     example: Transactions successfully fetched.
+        '400':
+          description: Mauvaise requête (paramètres manquants ou incorrects)
+        '401':
+          description: Non autorisé (token manquant ou invalide)
+        '404':
+          description: Ressource non trouvée
   /api/transactions/{transaction_id}:
     get:
       summary: Visualisation des détails d'une transaction spécifique
@@ -90,6 +102,12 @@ paths:
           in: path
           required: true
           description: L'identifiant de la transaction
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: Le token d'authentification
+          required: true
           schema:
             type: string
       responses:
@@ -130,12 +148,16 @@ paths:
                   message:
                     type: string
                     example: Transaction details successfully fetched.
+        '400':
+          description: Mauvaise requête (transaction_id incorrect)
+        '401':
+          description: Non autorisé (token manquant ou invalide)
+        '404':
+          description: Transaction non trouvée
   /api/transactions/{transaction_id}/update:
     put:
-      summary: Ajout d'informations supplémentaires à une transaction existante
-      description: >-
-        Ajoute des informations supplémentaires à une transaction existante,
-        telles que le type, les catégories, et la note.
+      summary: Mise à jour d'une transaction existante
+      description: Modifie une transaction existante en remplaçant les informations spécifiées.
       parameters:
         - name: transaction_id
           in: path
@@ -143,57 +165,66 @@ paths:
           description: L'identifiant de la transaction
           schema:
             type: string
-        - name: type
-          in: query
+        - name: Authorization
+          in: header
+          description: Le token d'authentification
           required: true
-          description: Le type de la transaction
           schema:
             type: string
-            enum:
-              - income
-              - expense
-        - name: categories
-          in: query
-          description: Les catégories associées à la transaction
+    requestBody:
+      required: true
+      content:
+        application/json:
           schema:
-            type: array
-            items:
-              type: string
-        - name: note
-          in: query
-          description: Note à ajouter à la transaction
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Informations ajoutées avec succès
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Transaction information updated successfully.
-                  transaction:
-                    type: object
-                    properties:
-                      transaction_id:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - income
+                  - expense
+              categories:
+                type: array
+                items:
+                  type: string
+              note:
+                type: string
+    responses:
+      '200':
+        description: Transaction mise à jour avec succès
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Transaction information updated successfully.
+                transaction:
+                  type: object
+                  properties:
+                    transaction_id:
+                      type: string
+                    type:
+                      type: string
+                    categories:
+                      type: array
+                      items:
                         type: string
-                      type:
-                        type: string
-                      categories:
-                        type: array
-                        items:
-                          type: string
-                      note:
-                        type: string
+                    note:
+                      type: string
+      '400':
+        description: Mauvaise requête (paramètres manquants ou incorrects)
+      '401':
+        description: Non autorisé (token manquant ou invalide)
+      '404':
+        description: Transaction non trouvée
   /api/transactions/{transaction_id}/modify:
-    patch:
-      summary: Modification des informations d'une transaction existante
+    put:
+      summary: Mise à jour partielle des informations d'une transaction existante
       description: >-
-        Modifie les informations d'une transaction existante, telles que le
-        type, les catégories et la note.
+        Modifie partiellement les informations d'une transaction existante,
+        telles que le type, les catégories et la note.
       parameters:
         - name: transaction_id
           in: path
@@ -201,29 +232,94 @@ paths:
           description: L'identifiant de la transaction
           schema:
             type: string
-        - name: type
-          in: query
-          description: Le type de la transaction
+        - name: Authorization
+          in: header
+          description: Le token d'authentification
+          required: true
           schema:
             type: string
-            enum:
-              - income
-              - expense
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - income
+                  - expense
+              categories:
+                type: array
+                items:
+                  type: string
+              note:
+                type: string
+    responses:
+      '200':
+        description: Transaction partiellement mise à jour avec succès
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Transaction information updated successfully.
+                transaction:
+                  type: object
+                  properties:
+                    transaction_id:
+                      type: string
+                    type:
+                      type: string
+                    categories:
+                      type: array
+                      items:
+                        type: string
+                    note:
+                      type: string
+      '400':
+        description: Mauvaise requête (paramètres manquants ou incorrects)
+      '401':
+        description: Non autorisé (token manquant ou invalide)
+      '404':
+        description: Transaction non trouvée
+  /api/transactions/{transaction_id}/delete_info:
+    delete:
+      summary: Suppression d'informations spécifiques d'une transaction
+      description: >-
+        Supprime certaines informations spécifiques d'une transaction, comme
+        les catégories ou la note, sans supprimer la transaction elle-même.
+      parameters:
+        - name: transaction_id
+          in: path
+          required: true
+          description: L'identifiant de la transaction
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: Le token d'authentification
+          required: true
+          schema:
+            type: string
         - name: categories
           in: query
-          description: Les catégories associées à la transaction
+          description: Liste des catégories à supprimer.
           schema:
             type: array
             items:
               type: string
         - name: note
           in: query
-          description: Note à modifier pour la transaction
+          description: La note à supprimer.
           schema:
             type: string
       responses:
         '200':
-          description: Informations modifiées avec succès
+          description: Informations supprimées avec succès
           content:
             application/json:
               schema:
@@ -231,13 +327,11 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: Transaction information modified successfully.
+                    example: Transaction information deleted successfully.
                   transaction:
                     type: object
                     properties:
                       transaction_id:
-                        type: string
-                      type:
                         type: string
                       categories:
                         type: array
@@ -245,6 +339,12 @@ paths:
                           type: string
                       note:
                         type: string
+        '400':
+          description: Mauvaise requête (paramètres manquants ou incorrects)
+        '401':
+          description: Non autorisé (token manquant ou invalide)
+        '404':
+          description: Transaction non trouvée
 components:
   schemas:
     Transaction:
